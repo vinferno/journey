@@ -69,6 +69,8 @@ export class BeingBaseComponent implements OnInit {
   public nextPosition;
 
   public speed = 10;
+  public distance = 0;
+  public times = 0;
 
   constructor(
     public allItemsService: AllItemsService,
@@ -144,7 +146,10 @@ export class BeingBaseComponent implements OnInit {
     const myBottom = myTop + this.state.value.height;
     const theirBottom = theirTop + item.state.value.height;
     const yOverlap = !(myTop < theirTop) && !(myTop > theirBottom) || !(myBottom < theirTop) && !(myBottom > theirBottom);
-    if (!yOverlap) {console.log('no y overlap'); return; }
+    if (!yOverlap) {
+      console.log('no y overlap');
+      return;
+    }
     const myLeft = this.state.value.x + left;
     const theirLeft = item.state.value.x;
     const myRight = myLeft + this.state.value.width;
@@ -158,7 +163,10 @@ export class BeingBaseComponent implements OnInit {
     const myRight = myLeft + this.state.value.width;
     const theirRight = theirLeft + item.state.value.width;
     const xOverlap = !(myLeft < theirLeft) && !(myLeft > theirRight) || !(myRight < theirLeft) && !(myRight > theirRight);
-    if (!xOverlap) {console.log('no x overlap'); return; }
+    if (!xOverlap) {
+      console.log('no x overlap');
+      return;
+    }
     const myTop = this.state.value.y + top;
     const theirTop = item.state.value.y;
     const myBottom = myTop + this.state.value.height;
@@ -176,10 +184,6 @@ export class BeingBaseComponent implements OnInit {
   }
 
   private testMove() {
-
-    if (!this.isMoving() && !this.being.gravity) {
-      return;
-    }
     const top = this.determineTop();
     const left = this.determineLeft();
     let adjustedTop = top;
@@ -222,16 +226,12 @@ export class BeingBaseComponent implements OnInit {
 
     if (adjustedTop) {
       console.log('adjusted top', adjustedTop);
-      if (Math.abs(adjustedTop) <= Math.abs(this.speed)) {
-        this.moveTop(adjustedTop);
-      }
+      this.moveTop(adjustedTop);
     }
 
     if (adjustedLeft) {
       console.log('adjusted left', adjustedLeft);
-      if (Math.abs(left) <= Math.abs(this.speed)) {
-        this.moveLeft(adjustedLeft);
-      }
+      this.moveLeft(adjustedLeft);
     }
 
 
@@ -283,6 +283,8 @@ export class BeingBaseComponent implements OnInit {
   }
 
   private moveTop(distance) {
+    this.distance = distance;
+    this.times++;
     const y = this.state.get('y');
     y.setValue(y.value + distance);
   }
@@ -297,7 +299,7 @@ export class BeingBaseComponent implements OnInit {
   private determineTop() {
     this.state.get('yForce').setValue(this.state.get('gravity').value);
     let top = this.state.get('yForce').value;
-    this.state.value.movingUp ? top += -(this.speed) : top += 0;
+    this.state.value.movingUp ? top += (this.speed * 2) * -1 : top += 0;
     this.state.value.movingDown ? top = (this.speed) : top += 0;
     return top;
   }

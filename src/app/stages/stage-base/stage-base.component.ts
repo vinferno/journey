@@ -22,10 +22,10 @@ export class StageBaseComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.beings.push(StageBaseComponent.getPlayer({z: 100, x: 300, y: 100, down: 'd', up: 'e', right: 'f', left: 's', gravity: 3}));
+    this.beings.push(StageBaseComponent.getPlayer({z: 100, x: 300, y: 100, down: 'd', up: 'e', right: 'f', left: 's', gravity: 10}));
 
     for (let i = 0; i < 20; i++) {
-      this.beings.push(StageBaseComponent.getPlayer({z: 100, x: 100 * i, y: 300, down: 'k', up: 'i', right: 'l', left: 'j', gravity: 0}));
+      this.beings.push(StageBaseComponent.getPlayer({z: 100, x: 200 * i, y: 300, down: 'k', up: 'i', right: 'l', left: 'j', gravity: 1}));
     }
   }
 
