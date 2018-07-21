@@ -1,0 +1,7 @@
+<div>
+  stage-base works!
+  <div>
+    {{allItemsService.items}}
+  </div>
+  <vf-being-base *ngFor="let being of beings; let i = index;" [being]="being" [id]="i"></vf-being-base>
+</div>
