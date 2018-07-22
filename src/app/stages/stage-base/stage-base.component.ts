@@ -1,5 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AllItemsService} from '../../core/services/all-items.service';
+import {IBeingConfig} from '../../beings/being-base/being-base.component';
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'vf-stage-base',
@@ -8,25 +10,51 @@ import {AllItemsService} from '../../core/services/all-items.service';
 })
 export class StageBaseComponent implements OnInit {
 
-  public beings = [];
-  public static getPlayer({x, y, z, left, right, down, up, gravity}) {
+  public gravity = 10;
+  public beings: IBeingConfig[] = [];
+  public ready = false;
+
+  public stageConfig;
+  public static getPlayer({x, y, z, left, right, down, up, away, toward, gravity}): IBeingConfig {
     return {
       type: 'player', x, y, z, solid: true, id: 1, gravity,
-      keys: {left, right, down, up}
+      keys: {left, right, down, up, away, toward},
+      animated: true,
+    };
+  }
+
+  public static getPlatform({x, y, z, left, right, down, up, away, toward, gravity}): IBeingConfig {
+    return {
+      type: 'platform', x, y, z, solid: true, id: 1, gravity,
+      keys: {left, right, down, up, away, toward},
+      animated: false,
     };
   }
 
   constructor(
     public allItemsService: AllItemsService,
+    public http: HttpClient,
   ) {
   }
 
   ngOnInit() {
-    this.beings.push(StageBaseComponent.getPlayer({z: 100, x: 300, y: 100, down: 'd', up: 'e', right: 'f', left: 's', gravity: 10}));
+    this.http.get('./assets/stage1.json').subscribe( res => {
 
-    for (let i = 0; i < 20; i++) {
-      this.beings.push(StageBaseComponent.getPlayer({z: 100, x: 200 * i, y: 300, down: 'k', up: 'i', right: 'l', left: 'j', gravity: 1}));
-    }
+      this.stageConfig = res;
+      this.init();
+    });
+
+  }
+
+  public init() {
+    this.stageConfig.players.forEach( player => {
+      this.beings.push(StageBaseComponent.getPlayer(player));
+    });
+    this.stageConfig.platforms.forEach( platform => {
+      this.beings.push(StageBaseComponent.getPlatform( platform ));
+    });
+    this.ready = true;
+    console.log('ready');
   }
 
 

@@ -1,0 +1,54 @@
+{
+  "players": [
+    {
+      "z": 100,
+      "x": 0,
+      "y": 100,
+      "down": "d",
+      "up": "e",
+      "right": "f",
+      "left": "s",
+      "away": "r",
+      "toward": "v",
+      "gravity": 10
+    }
+  ],
+  "platforms": [
+    {
+      "z": 100,
+      "x": 0,
+      "y": 400,
+      "down": "k",
+      "up": "i",
+      "right": "l",
+      "left": "j",
+      "away": "u",
+      "toward": "m",
+      "gravity": 10
+    },
+    {
+      "z": 100,
+      "x": 100,
+      "y": 400,
+      "down": "k",
+      "up": "i",
+      "right": "l",
+      "left": "j",
+      "away": "u",
+      "toward": "m",
+      "gravity": 10
+    },
+    {
+      "z": 100,
+      "x": 200,
+      "y": 400,
+      "down": "k",
+      "up": "i",
+      "right": "l",
+      "left": "j",
+      "away": "u",
+      "toward": "m",
+      "gravity": 10
+    }
+  ]
+}

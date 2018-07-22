@@ -1,5 +1,7 @@
-<div>
-  stage-base works!
+<div *ngIf="ready">
+  res
+  {{ stageConfig | json}}
+  ----
   <div>
     {{allItemsService.items}}
   </div>

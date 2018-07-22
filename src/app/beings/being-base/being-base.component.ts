@@ -32,6 +32,7 @@ export class IBeingConfig {
   z: number;
   gravity: number;
   keys: IKeys;
+  animated: boolean;
 
   constructor
   () {
@@ -68,7 +69,7 @@ export class BeingBaseComponent implements OnInit {
   public state;
   public nextPosition;
 
-  public speed = 10;
+  public speed = 20;
   public distance = 0;
   public times = 0;
 
@@ -97,7 +98,7 @@ export class BeingBaseComponent implements OnInit {
     });
 
     this.clock.tick.subscribe(tick => {
-      if (tick) {
+      if (tick && this.being.animated) {
         this.testMove();
         this.draw();
       }
