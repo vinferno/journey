@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AllItemsService} from '../../core/services/all-items.service';
-import {IBeingConfig} from '../../beings/being-base/being-base.component';
 import {HttpClient} from '@angular/common/http';
+import {IBeingConfig} from '../../interfaces/IBeingConfig';
 
 @Component({
   selector: 'vf-stage-base',

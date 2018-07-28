@@ -3,49 +3,7 @@ import {AllItemsService} from '../../core/services/all-items.service';
 import {ClockService} from '../../core/services/clock.service';
 import {FormBuilder} from '@angular/forms';
 import {InputsService} from '../../core/services/inputs.service';
-
-export class IKeys {
-
-  left: string;
-  right: string;
-  up: string;
-  down: string;
-  away: string;
-  toward: string;
-
-  constructor() {
-    this.left = null;
-    this.right = null;
-    this.up = null;
-    this.down = null;
-    this.away = null;
-    this.toward = null;
-  }
-}
-
-export class IBeingConfig {
-  solid: boolean;
-  type: string;
-  id: number;
-  x: number;
-  y: number;
-  z: number;
-  gravity: number;
-  keys: IKeys;
-  animated: boolean;
-
-  constructor
-  () {
-    this.solid = null;
-    this.type = null;
-    this.id = null;
-    this.keys = null;
-    this.x = 0;
-    this.y = 0;
-    this.z = 0;
-    this.gravity = 0;
-  }
-}
+import {IBeingConfig} from '../../interfaces/IBeingConfig';
 
 const movingRight = 'movingRight';
 const movingLeft = 'movingLeft';
@@ -73,6 +31,12 @@ export class BeingBaseComponent implements OnInit {
   public distance = 0;
   public times = 0;
 
+  // movement;
+  public initialTop;
+  public initialLeft;
+  public adjustedTop;
+  public adjustedLeft;
+
   constructor(
     public allItemsService: AllItemsService,
     public clock: ClockService,
@@ -97,10 +61,22 @@ export class BeingBaseComponent implements OnInit {
       this.handleKeyUp(key);
     });
 
-    this.clock.tick.subscribe(tick => {
-      if (tick && this.being.animated) {
-        this.testMove();
-        this.draw();
+    this.clock.tick.subscribe(phase => {
+      console.log('tick', phase);
+      if (phase && this.being.animated) {
+
+        if (phase === 'testMoves') {
+          this.testMove();
+        }
+        if (phase === 'detectCollision') {
+          this.testCollision();
+        }
+        if (phase === 'move') {
+          this.move();
+        }
+        if (phase === 'draw') {
+          this.draw();
+        }
       }
     });
 
@@ -137,10 +113,6 @@ export class BeingBaseComponent implements OnInit {
     });
   }
 
-  public getStyle() {
-    return this.style.value;
-  }
-
   testCollisionLeft(top, left, item) {
     const myTop = this.state.value.y + top;
     const theirTop = item.state.value.y;
@@ -175,6 +147,16 @@ export class BeingBaseComponent implements OnInit {
     return !(myTop < theirTop) && !(myTop > theirBottom) || !(myBottom < theirTop) && !(myBottom > theirBottom);
   }
 
+  public getStyle() {
+    return this.style.value;
+  }
+
+  public log(...args) {
+    for (let i = 0; i < args.length; i++) {
+      console.log('id' , this.id, ':', args[i]);
+    }
+  }
+
   private isMoving() {
     return (
       this.state.get('movingRight').value ||
@@ -185,10 +167,13 @@ export class BeingBaseComponent implements OnInit {
   }
 
   private testMove() {
-    const top = this.determineTop();
-    const left = this.determineLeft();
-    let adjustedTop = top;
-    let adjustedLeft = left;
+    this.initialTop = this.determineTop();
+    this.initialLeft = this.determineLeft();
+  }
+
+  private testCollision() {
+    let adjustedTop = this.initialTop;
+    let adjustedLeft = this.initialLeft;
     this.allItemsService.items.forEach(item => {
       if (item.id === this.id) {
         return;
@@ -196,7 +181,7 @@ export class BeingBaseComponent implements OnInit {
       const angleOpen = !this.testCollisionLeft(adjustedTop, adjustedLeft, item) && !this.testCollisionTop(adjustedTop, adjustedLeft, item);
       const leftOnly = !this.testCollisionLeft(0, adjustedLeft, item) && !this.testCollisionTop(0, adjustedLeft, item);
       const topOnly = !this.testCollisionLeft(adjustedTop, 0, item) && !this.testCollisionTop(adjustedTop, 0, item);
-      const notInWay = !this.testCollisionLeft(top, left, item) && !this.testCollisionTop(top, left, item);
+      const notInWay = !this.testCollisionLeft(top, this.initialLeft, item) && !this.testCollisionTop(top, this.initialLeft, item);
       if (notInWay) {
         item.style.get('backgroundColor').setValue('green');
       } else {
@@ -225,17 +210,20 @@ export class BeingBaseComponent implements OnInit {
       adjustedLeft = this.testLeftDiff(adjustedTop, adjustedLeft, item);
     });
 
-    if (adjustedTop) {
-      console.log('adjusted top', adjustedTop);
-      this.moveTop(adjustedTop);
+    this.adjustedLeft = adjustedLeft;
+    this.adjustedTop = adjustedTop;
+  }
+
+  private move() {
+    if (this.adjustedTop) {
+      console.log('adjusted top', this.adjustedTop);
+      this.moveTop(this.adjustedTop);
     }
 
-    if (adjustedLeft) {
-      console.log('adjusted left', adjustedLeft);
-      this.moveLeft(adjustedLeft);
+    if (this.adjustedLeft) {
+      console.log('adjusted left', this.adjustedLeft);
+      this.moveLeft(this.adjustedLeft);
     }
-
-
   }
 
   private testLeftDiff(top, left, item) {

@@ -7,10 +7,12 @@ import { map } from 'rxjs/operators';
 })
 export class ClockService {
   public tick;
+  public phases = ['testMoves', 'detectCollision', 'move', 'draw'];
+  public phase = 0;
 
   constructor() {
     this.tick = interval(100).pipe(
-      map(res => { if (res > 1) { return res; } else {return false; }})
+      map(res => { return this.phases[res % this.phases.length]; })
     );
   }
 }
